@@ -302,6 +302,58 @@
   }
 });
 
+        checkoutBtn.addEventListener("click", function () {
+        // Iterate through cart items and collect order details
+        var orderDetails = [];
+        var cartItems = document.querySelectorAll("tbody tr");
+        cartItems.forEach(function (item) {
+            var productName = item.querySelector("td:nth-child(1) img").alt;
+            var productPrice = item.querySelector("td:nth-child(2) p span").innerText;
+            var quantity = item.querySelector("td:nth-child(3) input").value;
+            var customizationDetails = item.querySelector("td:nth-child(4)").innerText;
+
+            // Use productName, productPrice, quantity, and customizationDetails to create the array
+            orderDetails.push([productName, productPrice, quantity, customizationDetails]);
+        });
+
+        // Export the order details to Excel
+        exportOrderToExcel(orderDetails);
+
+        // Perform actions for checkout, e.g., submit order to the server
+        // Optionally, display a confirmation message
+        // alert("Order placed successfully!");
+
+        // Clear the cart after checkout
+        clearCart();
+    });
+}
+
+
+
+function exportOrderToExcel(orderDetails) {
+    var wsData = [["Món ăn", "Giá", "Số Lượng", "Customization"]];
+
+    orderDetails.forEach(function (order) {
+        var productName = order[0];
+        var productPrice = order[1];
+        var quantity = order[2];
+        var customizationDetails = order[3];
+
+        // Push data to the worksheet
+        wsData.push([productName, productPrice, quantity, customizationDetails]);
+    });
+
+    var ws = XLSX.utils.aoa_to_sheet(wsData);
+    var wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Order Details");
+
+    // Save the workbook
+    var today = new Date();
+    var fileName = "order_details_" + today.getFullYear() + "-" + (today.getMonth() + 1) + "-" + today.getDate() + ".xlsx";
+    XLSX.writeFile(wb, fileName);
+}
+
+
   
 
 
